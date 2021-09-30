@@ -5,6 +5,7 @@
 Art by Jack Kirby (1964, X-Men Vol.1,7)
 
 *These lights represent every living person on the planet. These white lights are the humans... and these are the mutants. You see, Logan? We're not as alone as you think."*
+
 -Professor X
 
 
