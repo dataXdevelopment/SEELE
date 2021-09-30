@@ -2,5 +2,11 @@
 
 ![image](https://user-images.githubusercontent.com/65873585/135470294-2b98e5f4-a89f-4b83-a223-0ec2f15cccea.png)
 
-
 Art by Jack Kirby (1964, X-Men Vol.1,7)
+
+*"These lights represent every living person on the planet. These white lights are the humans... and these are the mutants. You see, Logan? We're not as alone as you think."*
+-Professor X
+
+
+Cerebro serves as a no-code,end-to-end analytics pipeline designed for media researchers with a friendly UI. Built for centralisation--fast data scraping, analysis, and visualisation. 
+
