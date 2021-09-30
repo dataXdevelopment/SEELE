@@ -8,5 +8,5 @@ Art by Jack Kirby (1964, X-Men Vol.1,7)
 -Professor X
 
 
-Cerebro serves as an no-code end-to-end analytics pipeline for media researchers with a friendly UI. Designed for fast data scraping, analysis, and visualisation. 
+Cerebro serves as a no-code,end-to-end analytics pipeline designed for media researchers with a friendly UI. Built for fast data scraping, analysis, and visualisation. 
 
