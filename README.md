@@ -1,6 +1,6 @@
 # SEELE
 
->*"Tthen there is no possibility of any community between them. The community was, however, recognized by ancient metaphysics as an undeniable fact."*-Hegel
+>*"Then there is no possibility of any community between them. The community was, however, recognized by ancient metaphysics as an undeniable fact."* -Hegel
 
 
 
