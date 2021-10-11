@@ -7,8 +7,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: run YAPF to test if python code is correctly formatted
-        uses: AlexanderMelde/yapf-action@master
+      - name: autoyapf
+        id: autoyapf
+        uses: mritunjaysharma394/autoyapf@v2
         with:
-          args: --verbose
-
+          args: --recursive --in-place .
+      - name: Check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'github-actions' 
+          git config --global user.email 'github-actions@github.com' 
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "ci(yapf): :construction_worker: Automated yapf fixes"
+          git push
