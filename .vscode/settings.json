@@ -1,5 +1,8 @@
 {
-  "conventionalCommits.scopes": ["features"],
+  "conventionalCommits.scopes": [
+    "features",
+    "ci"
+  ],
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
   "python.formatting.provider": "yapf",
