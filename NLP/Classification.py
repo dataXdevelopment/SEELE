@@ -13,47 +13,50 @@ import tensorflow as tf
 
 
 class BinaryClassifier(object):
-    def __init__(self, articles, labels):
 
-        ## data bundling from raw data ## split T/T data
+  def __init__(self, articles, labels):
 
-        ## base model
+    ## data bundling from raw data ## split T/T data
 
-        self.cv = CountVectorizer()
+    ## base model
 
-        self.model = LogisticRegression()
+    self.cv = CountVectorizer()
 
-        ## optimiser
+    self.model = LogisticRegression()
+
+    ## optimiser
 
 
 class BertClassifier(object):
-    def __init__(self):
 
-        self.model = TFBertForSequenceClassification.from_pretrained(
-            "bert-base-uncased")
+  def __init__(self):
 
-        self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    self.model = TFBertForSequenceClassification.from_pretrained(
+        "bert-base-uncased")
+
+    self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
 
 class GlobalOptimiser(object):
-    def __init__(self, lrate, eps, cnorm):
 
-        self.optimiser = tf.keras.optimizers.Adam(learning_rate=lrate,
-                                                  epsilon=eps,
-                                                  clipnorm=cnorm)
+  def __init__(self, lrate, eps, cnorm):
 
-        ## loss function
+    self.optimiser = tf.keras.optimizers.Adam(learning_rate=lrate,
+                                              epsilon=eps,
+                                              clipnorm=cnorm)
 
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    ## loss function
 
-        ## metrics
+    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
-        metrics = [tf.keras.metrics.SparseCategoricalAccuracy('accuracy')]
+    ## metrics
 
-        ## compile the optimiser
+    metrics = [tf.keras.metrics.SparseCategoricalAccuracy('accuracy')]
 
-        model.compile(optimizer=self.optimizer,
-                      loss=self.loss,
-                      metrics=self.metrics)
+    ## compile the optimiser
 
-        ## fit the model
+    model.compile(optimizer=self.optimizer,
+                  loss=self.loss,
+                  metrics=self.metrics)
+
+    ## fit the model
