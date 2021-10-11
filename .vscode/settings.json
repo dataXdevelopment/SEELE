@@ -1,11 +1,7 @@
 {
-    "conventionalCommits.scopes": [
-        "features"
-    ],
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "python.formatting.provider": "yapf",
-    "python.formatting.yapfArgs": [
-        "--style='{based_on_style: google}'"
-    ]
+  "conventionalCommits.scopes": ["features"],
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "yapf",
+  "editor.formatOnSave": true
 }
