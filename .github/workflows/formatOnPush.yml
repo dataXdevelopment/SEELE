@@ -22,6 +22,7 @@ jobs:
           git config --global user.email 'github-actions@github.com' 
           git commit -am "ci(yapf): :construction_worker: Automated yapf fixes"
       - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
