@@ -1,7 +1,7 @@
-import numpy as np 
+import numpy as np
 import pandas as pd
 import re
-import os 
+import os
 import random
 import spacy
 from spacy.util import minibatch, compounding
@@ -12,45 +12,39 @@ from sklearn.metrics import accuracy_score
 import tensorflow as tf
 
 
-
 class BinaryClassifier(object):
-    
-    def __init__(self,articles,labels):
-        
-        
+    def __init__(self, articles, labels):
+
         ## data bundling from raw data ## split T/T data
-        
-        ## base model 
-    
+
+        ## base model
+
         self.cv = CountVectorizer()
-        
+
         self.model = LogisticRegression()
-        
-        ## optimiser 
-        
-  
+
+        ## optimiser
+
+
 class BertClassifier(object):
-    
     def __init__(self):
-    
-        self.model = TFBertForSequenceClassification.from_pretrained("bert-base-uncased")
-        
+
+        self.model = TFBertForSequenceClassification.from_pretrained(
+            "bert-base-uncased")
+
         self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-        
-    
+
+
 class GlobalOptimiser(object):
-    
     def __init__(self, lrate, eps, cnorm):
-        
-        self.optimiser = tf.keras.optimizers.Adam(
-            learning_rate=lrate, epsilon=eps,
-            clipnorm=cnorm
-        )
+
+        self.optimiser = tf.keras.optimizers.Adam(learning_rate=lrate,
+                                                  epsilon=eps,
+                                                  clipnorm=cnorm)
 
         ## loss function
 
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(
-            from_logits=True)
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
         ## metrics
 
@@ -59,14 +53,7 @@ class GlobalOptimiser(object):
         ## compile the optimiser
 
         model.compile(optimizer=self.optimizer,
-                           loss=self.loss, metrics=self.metrics)
+                      loss=self.loss,
+                      metrics=self.metrics)
 
         ## fit the model
-        
-        
-    
-    
-    
-
-    
-    
