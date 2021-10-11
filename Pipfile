@@ -10,7 +10,6 @@ alive-progress = "*"
 selenium = "*"
 bs4 = "*"
 lxml = "*"
-black = "*"
 
 [dev-packages]
 pylint = "*"
