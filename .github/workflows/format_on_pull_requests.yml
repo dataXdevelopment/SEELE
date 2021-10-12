@@ -20,6 +20,10 @@ jobs:
         run: |
           git config --global user.name 'github-actions' 
           git config --global user.email 'github-actions@github.com' 
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "ci(yapf): :construction_worker: Automated yapf styling"
-          git push
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
