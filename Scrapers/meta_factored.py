@@ -14,7 +14,11 @@ from bs4 import BeautifulSoup
 from lxml import html
 
 
-class MetaCriticSraperTool(object):
+class MetaCriticSraperTool(object
+
+
+
+        ):
     """Generated a CSV for a given MetaCritic Url
 
   instance.run_scraper returns the CSV file
