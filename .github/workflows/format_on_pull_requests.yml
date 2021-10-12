@@ -1,5 +1,5 @@
 name: Format code on Pull Requests
-on: [pull_request]
+on: [workflow_dispatch]
 jobs:
   formatting-check:
     name: Formatting Check
