@@ -9,6 +9,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+          token: ${{ secrets.FORMAT_CODE }}
       - name: autoyapf
         id: autoyapf
         uses: mritunjaysharma394/autoyapf@v2
