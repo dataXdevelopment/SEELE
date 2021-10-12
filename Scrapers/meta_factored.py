@@ -33,9 +33,8 @@ class MetaCriticSraperTool(object):
 
         # self.chrome_options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'   #pylint: disable=line-too-long
 
-        self.driver = webdriver.Chrome(
-            "./chromedriver", chrome_options=self.chrome_options
-        )
+        self.driver = webdriver.Chrome("./chromedriver",
+                                       chrome_options=self.chrome_options)
 
     def load_website(self, url):
 
@@ -50,8 +49,7 @@ class MetaCriticSraperTool(object):
         ## display product name
 
         product_title = self.driver.find_element_by_css_selector(
-            'div[class="product_title"]'
-        ).text
+            'div[class="product_title"]').text
 
         yield print(f"Site loaded for product : {product_title}")
 
@@ -61,7 +59,8 @@ class MetaCriticSraperTool(object):
 
     def click_next(self):
 
-        self.driver.find_element_by_css_selector('span[class="flipper next"]').click()
+        self.driver.find_element_by_css_selector(
+            'span[class="flipper next"]').click()
 
     def get_page_source(self):
 
@@ -84,7 +83,8 @@ class MetaCriticSraperTool(object):
 
         self.main_list = []
 
-        self.review_cards = self.soup.find_all("div", attrs={"class": "review_content"})
+        self.review_cards = self.soup.find_all(
+            "div", attrs={"class": "review_content"})
 
         for review in self.review_cards:
 
@@ -117,12 +117,10 @@ class MetaCriticSraperTool(object):
         """
 
         product_title = self.driver.find_element_by_css_selector(
-            'div[class="product_title"]'
-        ).text
+            'div[class="product_title"]').text
 
         number_of_pages = self.driver.find_element_by_css_selector(
-            'li[class="page last_page"]'
-        ).text
+            'li[class="page last_page"]').text
 
         number_of_pages = re.findall(r"\d+", number_of_pages)
 
@@ -130,10 +128,8 @@ class MetaCriticSraperTool(object):
 
         num_reviews = 100 * page_count
 
-        yield print(
-            f"{product_title} has {page_count} pages of reviews."
-            f"That's approximately {num_reviews} reviews!"
-        )
+        yield print(f"{product_title} has {page_count} pages of reviews."
+                    f"That's approximately {num_reviews} reviews!")
 
         return page_count
 
@@ -167,7 +163,8 @@ class MetaCriticSraperTool(object):
             current_page += 1
             ## note to devinda - progress bar above, text update below? how to send concurrently #pylint: disable=line-too-long
 
-            yield print(f"Page {current_page} complete. Moving onto next page ...")
+            yield print(
+                f"Page {current_page} complete. Moving onto next page ...")
 
             self.click_next()
 

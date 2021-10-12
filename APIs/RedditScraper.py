@@ -35,12 +35,10 @@ class RedditScraper(object):
                 for query in self.subq:
 
                     generator_obj_1 = self.reddit_api.search_comments(
-                        q=query, subreddit=channel
-                    )
+                        q=query, subreddit=channel)
 
                     submissions = pd.DataFrame(
-                        [comment.d_ for comment in generator_obj_1]
-                    )
+                        [comment.d_ for comment in generator_obj_1])
 
                     submissions["Search_Term"] = query
 
@@ -52,9 +50,7 @@ class RedditScraper(object):
 
                     yield print(
                         "Comment extraction complete for {} in {}".format(
-                            query, channel
-                        )
-                    )  ## find a way to log to user
+                            query, channel))  ## find a way to log to user
 
             df = pd.concat(ls)
 
@@ -77,12 +73,10 @@ class RedditScraper(object):
                 for query in self.subq:
 
                     generator_obj = self.reddit_api.search_submissions(
-                        q=query, subreddit=channel
-                    )
+                        q=query, subreddit=channel)
 
                     submissions = pd.DataFrame(
-                        [submission.d_ for submission in generator_obj]
-                    )
+                        [submission.d_ for submission in generator_obj])
 
                     submissions["Search_Term"] = query
 
@@ -93,8 +87,8 @@ class RedditScraper(object):
                     bar()
 
                     yield print(
-                        "Thread extraction complete for {} in {}".format(query, channel)
-                    )
+                        "Thread extraction complete for {} in {}".format(
+                            query, channel))
 
             df = pd.concat(ls)
 
