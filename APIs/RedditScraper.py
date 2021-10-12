@@ -11,102 +11,104 @@ from alive_progress import alive_bar
 
 
 class RedditScraper(object):
-  '''
-    
-    
-    '''
+    """
 
-  def __init__(self, subred, queries):
 
-    self.subr = subred
+    """
 
-    self.subq = queries
+    def __init__(self, subred, queries):
 
-    self.reddit_api = PushshiftAPI()
+        self.subr = subred
 
-  def extract_threads(self):
+        self.subq = queries
 
-    ls = []
+        self.reddit_api = PushshiftAPI()
 
-    with alive_bar(100) as bar:
+    def extract_threads(self):
 
-      for channel in self.subr:
+        ls = []
 
-        for query in self.subq:
+        with alive_bar(100) as bar:
 
-          generator_obj_1 = self.reddit_api.search_comments(q=query,
-                                                            subreddit=channel)
+            for channel in self.subr:
 
-          submissions = pd.DataFrame(
-              [comment.d_ for comment in generator_obj_1])
+                for query in self.subq:
 
-          submissions['Search_Term'] = query
+                    generator_obj_1 = self.reddit_api.search_comments(
+                        q=query, subreddit=channel)
 
-          submissions['Search_Subreddit'] = channel
+                    submissions = pd.DataFrame(
+                        [comment.d_ for comment in generator_obj_1])
 
-          ls.append(submissions)
+                    submissions["Search_Term"] = query
 
-          bar()
+                    submissions["Search_Subreddit"] = channel
 
-          yield print('Comment extraction complete for {} in {}'.format(
-              query, channel))  ## find a way to log to user
+                    ls.append(submissions)
 
-      df = pd.concat(ls)
+                    bar()
 
-      csv_out = df.to_csv('RedditComments-8-24.csv')
+                    yield print(
+                        "Comment extraction complete for {} in {}".format(
+                            query, channel))  ## find a way to log to user
 
-      json_out = df.to_json(orient='records')
+            df = pd.concat(ls)
 
-      return csv_out, json_out
+            csv_out = df.to_csv("RedditComments-8-24.csv")
 
-##############
+            json_out = df.to_json(orient="records")
 
-  def extract_comments(self):
+            return csv_out, json_out
 
-    ls = []
+    ##############
 
-    with alive_bar(100) as bar:
+    def extract_comments(self):
 
-      for channel in self.subr:
+        ls = []
 
-        for query in self.subq:
+        with alive_bar(100) as bar:
 
-          generator_obj = self.reddit_api.search_submissions(q=query,
-                                                             subreddit=channel)
+            for channel in self.subr:
 
-          submissions = pd.DataFrame(
-              [submission.d_ for submission in generator_obj])
+                for query in self.subq:
 
-          submissions['Search_Term'] = query
+                    generator_obj = self.reddit_api.search_submissions(
+                        q=query, subreddit=channel)
 
-          submissions['Search_Subreddit'] = channel
+                    submissions = pd.DataFrame(
+                        [submission.d_ for submission in generator_obj])
 
-          ls.append(submissions)
+                    submissions["Search_Term"] = query
 
-          bar()
+                    submissions["Search_Subreddit"] = channel
 
-          yield print('Thread extraction complete for {} in {}'.format(
-              query, channel))
+                    ls.append(submissions)
 
-      df = pd.concat(ls)
+                    bar()
 
-      csv_out = df.to_csv('RedditThreads-8-24.csv')
+                    yield print(
+                        "Thread extraction complete for {} in {}".format(
+                            query, channel))
 
-      json_out = df.to_json(orient='records')
+            df = pd.concat(ls)
 
-      return csv_out, json_out
+            csv_out = df.to_csv("RedditThreads-8-24.csv")
 
-  def run_scraper(self):
+            json_out = df.to_json(orient="records")
 
-    dl_csv_threads, dl_json_threads = self.extract_threads()
+            return csv_out, json_out
 
-    dl_csv_comms, dl_json_comms = self.extract_comments()
+    def run_scraper(self):
 
-    return dl_csv_comms, dl_json_threads, dl_json_comms, dl_csv_threads
+        dl_csv_threads, dl_json_threads = self.extract_threads()
+
+        dl_csv_comms, dl_json_comms = self.extract_comments()
+
+        return dl_csv_comms, dl_json_threads, dl_json_comms, dl_csv_threads
 
 
 ###########
 
 if __name__ == "__main__":
 
-  pass
+    pass

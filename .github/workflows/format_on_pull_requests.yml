@@ -1,5 +1,5 @@
 name: Format code on Pull Requests
-on: [pull_request]  
+on: [workflow_dispatch]
 jobs:
   formatting-check:
     name: Formatting Check
@@ -18,8 +18,8 @@ jobs:
       - name: Push changes
         if: steps.git-check.outputs.modified == 'true'
         run: |
-          git config --global user.name 'github-actions' 
-          git config --global user.email 'github-actions@github.com' 
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}/${{ github.head_ref}}
           git commit -am "ci(yapf): :construction_worker: Automated yapf styling"
           git push
