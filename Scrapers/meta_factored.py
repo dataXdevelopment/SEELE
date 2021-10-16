@@ -31,9 +31,11 @@ class MetaCriticSraperTool(object):
 
         self.chrome_options.add_argument("--headless")
 
+        self.chrome_path = input("Enter path to Chromedriver")
+
         # self.chrome_options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'   #pylint: disable=line-too-long
 
-        self.driver = webdriver.Chrome("./chromedriver",
+        self.driver = webdriver.Chrome(self.chrome_path,
                                        chrome_options=self.chrome_options)
 
     def load_website(self, url):
