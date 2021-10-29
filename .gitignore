@@ -1,6 +1,4 @@
 .venv/
 .DS_Store
 *chromedriver
-*.csv
-*.json
-output/
+output/*
