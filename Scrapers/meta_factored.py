@@ -29,7 +29,7 @@ class MetaCriticScrapter(object):
         self.chrome_options.add_argument("--headless")
         self.chrome_path = chrome_path
         self.driver = webdriver.Chrome(self.chrome_path,
-                                       chrome_options=self.chrome_options)
+                                       options=self.chrome_options)
         self.product_title = ""
 
     def load_website(self):
