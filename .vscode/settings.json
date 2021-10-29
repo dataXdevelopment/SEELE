@@ -1,10 +1,12 @@
 {
   "conventionalCommits.scopes": [
     "features",
-    "ci"
+    "ci",
+    "gitignore"
   ],
-  "python.linting.pylintEnabled": true,
+  "python.linting.pylintEnabled": false,
   "python.linting.enabled": true,
   "python.formatting.provider": "yapf",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.linting.flake8Enabled": true
 }
