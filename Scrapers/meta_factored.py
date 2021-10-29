@@ -12,6 +12,9 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from lxml import html
 
+# Defines default output folder name
+output_folder = "output"
+
 
 class MetaCriticScrapter(object):
     """Generated a CSV for a given MetaCritic Url
@@ -98,8 +101,8 @@ class MetaCriticScrapter(object):
         current_page = 0
 
         self.load_website()
-        page_count = self.get_no_pages()
-        # page_count = 3
+        # page_count = self.get_no_pages()
+        page_count = 3
 
         for _ in alive_it(range(page_count)):
             self.get_page_source()
@@ -178,10 +181,11 @@ class MetaCriticScrapter(object):
         return self.df
 
     def to_csv(self):
-        title = self.product_title.replace(" ", "_")
-        self.df.to_csv(f"{title}_metacritic_user_reviews.csv", index=False)
+        title = self.product_title.replace(" ", "_").lower()
+        file_name = f"{title}_metacritic_user_reviews.csv"
+        self.df.to_csv(f"{output_folder}/{file_name}", index=False)
 
-        print(f"{self.product_title}.csv saved!")
+        print(f"{file_name} saved!")
 
     def run_scraper(self):
         print("Scraping MetaCritic ...")
@@ -197,6 +201,8 @@ class MetaCriticScrapter(object):
 
 if __name__ == "__main__":
     import sys
+    from pathlib import Path
+    Path(output_folder).mkdir(parents=True, exist_ok=True)
 
     url = sys.argv[1]
     chrome_driver = sys.argv[2]
