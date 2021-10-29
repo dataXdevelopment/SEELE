@@ -5,7 +5,6 @@ for the generation of a csv for a given MetaCritic Url
 
 import pandas as pd
 import re
-import time
 from alive_progress import alive_it
 
 from selenium import webdriver
@@ -16,58 +15,36 @@ from lxml import html
 
 class MetaCriticScrapter(object):
     """Generated a CSV for a given MetaCritic Url
-
   instance.run_scraper returns the CSV file
-
   Args:
       url (string): Valid MetaCritic Url
   """
 
     def __init__(self, url, chrome_path):
-
         self.url = url
-
         self.chrome_options = Options()
-
         self.chrome_options.add_argument("--headless")
-
         self.chrome_path = chrome_path
-
         self.driver = webdriver.Chrome(self.chrome_path,
                                        chrome_options=self.chrome_options)
         self.product_title = ""
 
     def load_website(self):
-
-        # get user input for url to scrape
-
-        # url = input("Enter the MetaCritic page you wish to scrape:")
         self.driver.get(self.url)
-
-        # display product name
-
         self.product_title = self.driver.find_element_by_css_selector(
             'div[class="product_title"]').text
 
         print(f"Site loaded for product : {self.product_title}")
 
-        # sleep to ensure page is loaded correctly
-
-        time.sleep(5)
-
     def click_next(self):
-
         self.driver.find_element_by_css_selector(
             'span[class="flipper next"]').click()
 
     def get_page_source(self):
-
         source = self.driver.page_source
-
         return BeautifulSoup(source, "html.parser")
 
     def make_soup(self):
-
         self.soup = self.get_page_source()
         self.page = self.driver.page_source
         self.tree = html.fromstring(self.page)
@@ -75,30 +52,21 @@ class MetaCriticScrapter(object):
         return self.soup, self.page, self.tree
 
     def extract_reviews_from_page(self):
-        """
-        BeautifulSoup for extracting elements
-        """
-
         self.main_list = []
-
         self.review_cards = self.soup.find_all(
             "div", attrs={"class": "review_content"})
 
         for review in self.review_cards:
-
             temp_list = []
 
             date = review.find("div", attrs={"class": "date"}).text
-
             rating = review.find("div", attrs={"class": "review_grade"}).text
-
             review_body = review.find("div", attrs={
                 "class": "review_body"
             }).text
 
             try:
                 user = review.find("div", attrs={"class": "name"}).text
-            # FIXME Find correct error
             except AttributeError:  # pylint: disable=bare-except
                 user = "Anonymous"
 
@@ -112,21 +80,12 @@ class MetaCriticScrapter(object):
         return self.main_list
 
     def get_no_pages(self):
-        """
-        Gets the numbers of pages for the product to figure out pagination
-        range
-        """
-
         product_title = self.driver.find_element_by_css_selector(
             'div[class="product_title"]').text
-
         number_of_pages = self.driver.find_element_by_css_selector(
             'li[class="page last_page"]').text
-
         number_of_pages = re.findall(r"\d+", number_of_pages)
-
         page_count = int(number_of_pages[0])
-
         num_reviews = 100 * page_count
 
         print(f"{product_title} has {page_count} pages of reviews."
@@ -134,52 +93,37 @@ class MetaCriticScrapter(object):
 
         return page_count
 
-    # ## Section 2: Main scraping function
-
     def main_scraper(self):
-        self.load_website()
-
         self.reviews = []
-
-        page_count = self.get_no_pages()
-        # page_count = 3
-        print("Scraping MetaCritic ...")
-        print(page_count)
-
         current_page = 0
 
+        self.load_website()
+        page_count = self.get_no_pages()
+        # page_count = 3
+
         for _ in alive_it(range(page_count)):
-
             self.get_page_source()
-
             self.soup, self.page, self.tree = self.make_soup()
-
             reviews_in_page = self.extract_reviews_from_page()
 
             for element in reviews_in_page:
-
                 self.reviews.append(element)
 
             current_page += 1
-
             print(f"Page {current_page} complete. Moving onto next page ...")
 
             self.click_next()
 
     def make_dataframe(self):
-
         self.df = pd.DataFrame(self.reviews)
-
         self.df.columns = ["user", "date", "rating", "review"]
 
         return self.df
 
     def clean_ratings(self):
-
-        yield print("Cleaning ratings ...")
+        print("Cleaning ratings ...")
 
         ls = []
-
         ls2 = []
 
         for _, row in self.df.iterrows():
@@ -194,18 +138,15 @@ class MetaCriticScrapter(object):
         return self.df
 
     def clean_review(self):
-
-        yield print("Cleaning reviews ...")
+        print("Cleaning reviews ...")
 
         ls = []
-
         ls2 = []
 
         for _, row in self.df.iterrows():
             ls.append(row["review"])
 
         for review in ls:
-
             clean_review = review.replace("\n", "")
             ls2.append(clean_review)
 
@@ -214,16 +155,10 @@ class MetaCriticScrapter(object):
         return self.df
 
     def is_english(self, string):
-        """
-        Determine if string is English or not
-        """
-
         try:
             string.encode(encoding="utf-8").decode("ascii")
-
         except UnicodeDecodeError:
             return False
-
         else:
             return True
 
@@ -231,26 +166,21 @@ class MetaCriticScrapter(object):
         """
         Iterates through dataframe to drop all non-English rows
         """
-
-        yield print("Removing all non-English reviews ...")
+        print("Removing all non-English reviews ...")
 
         for index, row in self.df.iterrows():
-
             test = self.is_english(row["review"])
-
             if test is False:
-
                 self.df.drop(index, inplace=True)
-
             else:
                 pass
 
         return self.df
 
-    def save_file_and_exit(self):
-
+    def to_csv(self):
         title = self.product_title.replace(" ", "_")
         self.df.to_csv(f"{title}_metacritic_user_reviews.csv", index=False)
+
         print(f"{self.product_title}.csv saved!")
 
     def run_scraper(self):
@@ -258,22 +188,19 @@ class MetaCriticScrapter(object):
 
         self.main_scraper()
         self.driver.close()
-
         self.make_dataframe()
-
         self.clean_ratings()
-
         self.clean_review()
-
         self.remove_foreign_langs()
-
-        return self.save_file_and_exit()
+        return True
 
 
 if __name__ == "__main__":
     import sys
+
     url = sys.argv[1]
     chrome_driver = sys.argv[2]
+
     scraper = MetaCriticScrapter(url, chrome_driver)
-    x = scraper.run_scraper()
-    # print(x)
+    scraper.run_scraper()
+    scraper.to_csv()
