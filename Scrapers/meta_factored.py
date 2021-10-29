@@ -73,10 +73,13 @@ class MetaCriticScrapter(object):
             except AttributeError:  # pylint: disable=bare-except
                 user = "Anonymous"
 
-            temp_list.append(user)
+            name = user.strip()
+            review_text = str(review_body).strip()
+
+            temp_list.append(name)
             temp_list.append(date)
             temp_list.append(rating)
-            temp_list.append(review_body)
+            temp_list.append(review_text)
 
             self.main_list.append(temp_list)
 
