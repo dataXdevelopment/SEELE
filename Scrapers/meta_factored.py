@@ -9,6 +9,8 @@ from alive_progress import alive_it
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from lxml import html
 
@@ -27,21 +29,21 @@ class MetaCriticScrapter(object):
         self.url = url
         self.chrome_options = Options()
         self.chrome_options.add_argument("--headless")
-        self.chrome_path = chrome_path
-        self.driver = webdriver.Chrome(self.chrome_path,
+        self.chrome_path = Service(chrome_path)
+        self.driver = webdriver.Chrome(service=self.chrome_path,
                                        options=self.chrome_options)
         self.product_title = ""
 
     def load_website(self):
         self.driver.get(self.url)
-        self.product_title = self.driver.find_element_by_css_selector(
-            'div[class="product_title"]').text
+        self.product_title = self.driver.find_element(
+            by=By.CSS_SELECTOR, value='div[class="product_title"]').text
 
         print(f"Site loaded for product : {self.product_title}")
 
     def click_next(self):
-        self.driver.find_element_by_css_selector(
-            'span[class="flipper next"]').click()
+        self.driver.find_element(by=By.CSS_SELECTOR,
+                                 value='span[class="flipper next"]').click()
 
     def get_page_source(self):
         source = self.driver.page_source
@@ -86,10 +88,10 @@ class MetaCriticScrapter(object):
         return self.main_list
 
     def get_no_pages(self):
-        product_title = self.driver.find_element_by_css_selector(
-            'div[class="product_title"]').text
-        number_of_pages = self.driver.find_element_by_css_selector(
-            'li[class="page last_page"]').text
+        product_title = self.driver.find_element(
+            by=By.CSS_SELECTOR, value='div[class="product_title"]').text
+        number_of_pages = self.driver.find_element(
+            by=By.CSS_SELECTOR, value='li[class="page last_page"]').text
         number_of_pages = re.findall(r"\d+", number_of_pages)
         page_count = int(number_of_pages[0])
         num_reviews = 100 * page_count
