@@ -3,3 +3,4 @@
 *chromedriver
 *.csv
 *.json
+output/
