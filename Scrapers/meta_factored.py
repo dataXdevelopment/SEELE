@@ -4,8 +4,8 @@ for the generation of a csv for a given MetaCritic Url
 """
 
 import pandas as pd
-import time
 import re
+import time
 from alive_progress import alive_it
 
 from selenium import webdriver
@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from lxml import html
 
 
-class MetaCriticSraperTool(object):
+class MetaCriticScrapter(object):
     """Generated a CSV for a given MetaCritic Url
 
   instance.run_scraper returns the CSV file
@@ -23,7 +23,7 @@ class MetaCriticSraperTool(object):
       url (string): Valid MetaCritic Url
   """
 
-    def __init__(self, url):
+    def __init__(self, url, chrome_path):
 
         self.url = url
 
@@ -31,29 +31,25 @@ class MetaCriticSraperTool(object):
 
         self.chrome_options.add_argument("--headless")
 
-        self.chrome_path = input("Enter path to Chromedriver")
-
-        # self.chrome_options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'   #pylint: disable=line-too-long
+        self.chrome_path = chrome_path
 
         self.driver = webdriver.Chrome(self.chrome_path,
                                        chrome_options=self.chrome_options)
+        self.product_title = ""
 
-    def load_website(self, url):
+    def load_website(self):
 
-        ## get user input for url to scrape
+        # get user input for url to scrape
 
         # url = input("Enter the MetaCritic page you wish to scrape:")
+        self.driver.get(self.url)
 
-        self.driver.get(url)
+        # display product name
 
-        ## driver.get('https://www.metacritic.com/game/pc/dota-2/user-reviews?sort-by=date&num_items=100') #pylint: disable=line-too-long
-
-        ## display product name
-
-        product_title = self.driver.find_element_by_css_selector(
+        self.product_title = self.driver.find_element_by_css_selector(
             'div[class="product_title"]').text
 
-        yield print(f"Site loaded for product : {product_title}")
+        print(f"Site loaded for product : {self.product_title}")
 
         # sleep to ensure page is loaded correctly
 
@@ -96,18 +92,20 @@ class MetaCriticSraperTool(object):
 
             rating = review.find("div", attrs={"class": "review_grade"}).text
 
-            review = review.find("div", attrs={"class": "review_body"}).text
+            review_body = review.find("div", attrs={
+                "class": "review_body"
+            }).text
 
             try:
                 user = review.find("div", attrs={"class": "name"}).text
             # FIXME Find correct error
-            except:  # pylint: disable=bare-except
+            except AttributeError:  # pylint: disable=bare-except
                 user = "Anonymous"
 
             temp_list.append(user)
             temp_list.append(date)
             temp_list.append(rating)
-            temp_list.append(review)
+            temp_list.append(review_body)
 
             self.main_list.append(temp_list)
 
@@ -115,7 +113,8 @@ class MetaCriticSraperTool(object):
 
     def get_no_pages(self):
         """
-        Gets the numbers of pages for the product to figure out pagination range
+        Gets the numbers of pages for the product to figure out pagination
+        range
         """
 
         product_title = self.driver.find_element_by_css_selector(
@@ -130,23 +129,22 @@ class MetaCriticSraperTool(object):
 
         num_reviews = 100 * page_count
 
-        yield print(f"{product_title} has {page_count} pages of reviews."
-                    f"That's approximately {num_reviews} reviews!")
+        print(f"{product_title} has {page_count} pages of reviews."
+              f"That's approximately {num_reviews} reviews!")
 
         return page_count
 
     # ## Section 2: Main scraping function
 
-    def main_scraper(self, url):
-        """
-        Scrapes each page using BS4 and paginates till end
-        """
-
-        self.load_website(url)
+    def main_scraper(self):
+        self.load_website()
 
         self.reviews = []
 
         page_count = self.get_no_pages()
+        # page_count = 3
+        print("Scraping MetaCritic ...")
+        print(page_count)
 
         current_page = 0
 
@@ -163,18 +161,10 @@ class MetaCriticSraperTool(object):
                 self.reviews.append(element)
 
             current_page += 1
-            ## note to devinda - progress bar above, text update below? how to send concurrently #pylint: disable=line-too-long
 
-            yield print(
-                f"Page {current_page} complete. Moving onto next page ...")
+            print(f"Page {current_page} complete. Moving onto next page ...")
 
             self.click_next()
-
-        # print(type(self.reviews))
-
-        # print(self.reviews[1][1])
-
-        return self.reviews
 
     def make_dataframe(self):
 
@@ -259,26 +249,14 @@ class MetaCriticSraperTool(object):
 
     def save_file_and_exit(self):
 
-        # product_name = driver.find_element_by_css_selector('div[class="product_title"]').text #pylint: disable=line-too-long
+        title = self.product_title.replace(" ", "_")
+        self.df.to_csv(f"{title}_metacritic_user_reviews.csv", index=False)
+        print(f"{self.product_title}.csv saved!")
 
-        # product = product_name()
+    def run_scraper(self):
+        print("Scraping MetaCritic ...")
 
-        # print('File saved ... Now exiting ...')
-
-        # exit()
-
-        csv_out = self.df.to_csv("MetacriticReviews_.csv")
-
-        return csv_out
-
-    def run_scraper(self, url):
-
-        # product_name = product_name(driver)
-
-        # load_website(url)
-
-        self.main_scraper(url)
-
+        self.main_scraper()
         self.driver.close()
 
         self.make_dataframe()
@@ -293,5 +271,9 @@ class MetaCriticSraperTool(object):
 
 
 if __name__ == "__main__":
-
-    pass
+    import sys
+    url = sys.argv[1]
+    chrome_driver = sys.argv[2]
+    scraper = MetaCriticScrapter(url, chrome_driver)
+    x = scraper.run_scraper()
+    # print(x)
