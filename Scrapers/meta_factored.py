@@ -13,6 +13,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from lxml import html
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 # Defines default output folder name
 output_folder = "output"
@@ -30,8 +31,10 @@ class MetaCriticScrapter(object):
         self.chrome_options = Options()
         self.chrome_options.add_argument("--headless")
         self.chrome_path = Service(chrome_path)
-        self.driver = webdriver.Chrome(service=self.chrome_path,
-                                       options=self.chrome_options)
+        self.driver = webdriver.Remote(
+            "http://172.19.0.2:4444",
+            DesiredCapabilities.CHROME,
+        )
         self.product_title = ""
 
     def load_website(self):
@@ -192,11 +195,14 @@ class MetaCriticScrapter(object):
 
         print(f"{file_name} saved!")
 
+    def upload_csv():
+        return True
+
     def run_scraper(self):
         print("Scraping MetaCritic ...")
 
         self.main_scraper()
-        self.driver.close()
+        self.driver.quit()()
         self.make_dataframe()
         self.clean_ratings()
         self.clean_review()

@@ -10,11 +10,13 @@ alive-progress = "*"
 selenium = "*"
 bs4 = "*"
 lxml = "*"
+celery = {extras = ["redis"], version = "*"}
 
 [dev-packages]
 pylint = "*"
 yapf = "*"
 pre-commit = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.9"
