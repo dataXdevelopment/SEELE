@@ -8,8 +8,6 @@ import re
 from alive_progress import alive_it
 
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from lxml import html
@@ -19,20 +17,17 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 output_folder = "output"
 
 
-class MetaCriticScrapter(object):
+class MetaCriticScraper(object):
     """Generated a CSV for a given MetaCritic Url
   instance.run_scraper returns the CSV file
   Args:
       url (string): Valid MetaCritic Url
   """
 
-    def __init__(self, url, chrome_path):
+    def __init__(self, url):
         self.url = url
-        self.chrome_options = Options()
-        self.chrome_options.add_argument("--headless")
-        self.chrome_path = Service(chrome_path)
         self.driver = webdriver.Remote(
-            "http://172.19.0.2:4444",
+            "http://selenium_grid:4444",
             DesiredCapabilities.CHROME,
         )
         self.product_title = ""
@@ -198,11 +193,11 @@ class MetaCriticScrapter(object):
     def upload_csv():
         return True
 
-    def run_scraper(self):
+    def run(self):
         print("Scraping MetaCritic ...")
 
         self.main_scraper()
-        self.driver.quit()()
+        self.driver.quit()
         self.make_dataframe()
         self.clean_ratings()
         self.clean_review()
@@ -218,6 +213,6 @@ if __name__ == "__main__":
     url = sys.argv[1]
     chrome_driver = sys.argv[2]
 
-    scraper = MetaCriticScrapter(url, chrome_driver)
-    scraper.run_scraper()
+    scraper = MetaCriticScraper(url, chrome_driver)
+    scraper.run()
     scraper.to_csv()

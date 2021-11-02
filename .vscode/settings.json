@@ -5,7 +5,8 @@
     "api",
     "ci",
     "gitignore",
-    "docker"    
+    "docker",
+    "workers"
   ],
   "python.linting.pylintEnabled": false,
   "python.linting.enabled": true,
