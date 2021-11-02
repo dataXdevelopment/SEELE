@@ -14,7 +14,6 @@ def main():
     channel.queue_declare(queue='tasks.metacritic', durable=True)
 
     def callback(ch, method, properties, body):
-        # print(" [x] Received %r" % body)
         request = json.loads(body)
         url = request['task']['url']
         scraper = MetaCriticScraper(url)
