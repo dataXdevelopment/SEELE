@@ -11,6 +11,7 @@ selenium = "*"
 bs4 = "*"
 lxml = "*"
 celery = {extras = ["redis"], version = "*"}
+pika = "*"
 
 [dev-packages]
 pylint = "*"

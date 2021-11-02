@@ -1,18 +1,40 @@
-from celery import Celery
+import os
+import sys
 
-from Scrapers.meta_factored import MetaCriticScrapter
+import pika
+import json
 
-BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-app = Celery('tasks', broker=BROKER_URL, backend=CELERY_RESULT_BACKEND)
+from Scrapers.meta_factored import MetaCriticScraper
 
 
-@app.task(name='tasks.scrape')
-def scrape(url, job_id):
-    # url = "https://www.metacritic.com/game/pc/dota-2/user-reviews"
-    chrome_driver = "./chromedriver"
+def main():
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='rabbitmq'))
+    channel = connection.channel()
+    channel.queue_declare(queue='tasks.metacritic', durable=True)
 
-    scraper = MetaCriticScrapter(url, chrome_driver)
-    scraper.run()
-    scraper.to_csv()
-    return "Completed"
+    def callback(ch, method, properties, body):
+        # print(" [x] Received %r" % body)
+        request = json.loads(body)
+        url = request['task']['url']
+        scraper = MetaCriticScraper(url)
+        scraper.run()
+        scraper.to_csv()
+
+    channel.basic_consume(queue='tasks.metacritic',
+                          auto_ack=True,
+                          on_message_callback=callback)
+
+    print(' [*] Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
