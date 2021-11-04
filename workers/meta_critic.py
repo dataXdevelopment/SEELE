@@ -13,30 +13,55 @@ def main():
         pika.ConnectionParameters(host='rabbitmq'))
     channel = connection.channel()
     request_queue = 'tasks.metacritic.requests'
-    response_queue = 'tasks.metacritic.responses'
     channel.queue_declare(queue=request_queue, durable=True)
-    channel.queue_declare(queue=response_queue, durable=True)
     redis_client = redis.Redis(host='redis',
                                decode_responses=True,
                                charset='utf-8')
 
+    def update_percentage(new_percentage, data):
+        task_id = data['scrapeStatus']['id']
+        data['scrapeStatus']['percentage'] = new_percentage
+        redis_client.publish(f'tasks.metacritic.results.{task_id}',
+                             json.dumps(data))
+
+    def complete_percentage(data):
+        task_id = data['scrapeStatus']['id']
+        data['scrapeStatus']['percentage'] = 100
+        data['scrapeStatus']['status'] = 'COMPLETED'
+        redis_client.publish(f'tasks.metacritic.results.{task_id}',
+                             json.dumps(data))
+
     def callback(ch, method, properties, body):
         print("Started Task")
+
         request = json.loads(body)
-        print(request)
         task_id = request['id']
-        url = request['task']['url']
+
+        response = request
+        print(request)
+
+        response['status'] = 'IN_PROGRESS'
+        redis_client.set(task_id, json.dumps(response))
+
+        # url = request['task']['url']
         # scraper = MetaCriticScraper(url)
         # scraper.run()
         # scraper.to_csv()
-        print(task_id)
+        data = {}
+        data['scrapeStatus'] = response
+
         print("Processing Task")
-        time.sleep(10)
+        count = 0
 
-        response = request
-        response['data'] = url
-        response['status'] = 'COMPLETED'
+        while count < 20:
+            count += 1
+            update_percentage(new_percentage=count, data=data)
+            time.sleep(1)
 
+        response[
+            'data'] = "https://pbs.twimg.com/media/FBWBM9MVgAE58S-?format=jpg&name=large"
+
+        complete_percentage(data)
         redis_client.set(task_id, json.dumps(response))
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
