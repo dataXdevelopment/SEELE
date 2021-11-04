@@ -1,9 +1,10 @@
+import json
 import os
 import sys
+import time
 
 import pika
-import json
-
+import redis
 from Scrapers.meta_factored import MetaCriticScraper
 
 
@@ -11,18 +12,38 @@ def main():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='rabbitmq'))
     channel = connection.channel()
-    channel.queue_declare(queue='tasks.metacritic', durable=True)
+    request_queue = 'tasks.metacritic.requests'
+    response_queue = 'tasks.metacritic.responses'
+    channel.queue_declare(queue=request_queue, durable=True)
+    channel.queue_declare(queue=response_queue, durable=True)
+    redis_client = redis.Redis(host='redis',
+                               decode_responses=True,
+                               charset='utf-8')
 
     def callback(ch, method, properties, body):
+        print("Started Task")
         request = json.loads(body)
+        print(request)
+        task_id = request['id']
         url = request['task']['url']
-        scraper = MetaCriticScraper(url)
-        scraper.run()
-        scraper.to_csv()
+        # scraper = MetaCriticScraper(url)
+        # scraper.run()
+        # scraper.to_csv()
+        print(task_id)
+        print("Processing Task")
+        time.sleep(10)
 
-    channel.basic_consume(queue='tasks.metacritic',
-                          auto_ack=True,
-                          on_message_callback=callback)
+        response = request
+        response['data'] = url
+        response['status'] = 'COMPLETED'
+
+        redis_client.set(task_id, json.dumps(response))
+
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        print("Task Completed")
+
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue=request_queue, on_message_callback=callback)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

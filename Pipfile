@@ -12,6 +12,7 @@ bs4 = "*"
 lxml = "*"
 celery = {extras = ["redis"], version = "*"}
 pika = "*"
+redis = "*"
 
 [dev-packages]
 pylint = "*"
