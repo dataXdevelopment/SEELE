@@ -4,7 +4,9 @@
     "nlp",
     "api",
     "ci",
-    "gitignore"
+    "gitignore",
+    "docker",
+    "workers"
   ],
   "python.linting.pylintEnabled": false,
   "python.linting.enabled": true,
