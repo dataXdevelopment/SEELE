@@ -1,15 +1,16 @@
-import numpy as np
-import pandas as pd
-import re
 import os
 import random
+import re
+
+import numpy as np
+import pandas as pd
 import spacy
-from spacy.util import minibatch, compounding
-from sklearn.model_selection import train_test_split
+import tensorflow as tf
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from spacy.util import compounding, minibatch
 
 
 class BinaryClassifier(object):

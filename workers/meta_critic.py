@@ -5,8 +5,9 @@ import sys
 
 import pika
 import redis
-from Scrapers.meta_factored import MetaCriticScraper
 from google.cloud import storage
+
+from Scrapers.meta_factored import MetaCriticScraper
 
 
 def upload_to_gcs(output_file) -> str:

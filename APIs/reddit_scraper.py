@@ -1,9 +1,10 @@
 import json
-import psaw
-from psaw import PushshiftAPI
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import psaw
 from alive_progress import alive_bar
+from psaw import PushshiftAPI
 
 # # deps: psaw, pandas, numpy
 

@@ -3,15 +3,15 @@ This module exports the MetaCriticScaperTool class which allows
 for the generation of a csv for a given MetaCritic Url
 """
 
-from typing import Callable
-import pandas as pd
 import re
-from alive_progress import alive_it
+from typing import Callable
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import pandas as pd
+from alive_progress import alive_it
 from bs4 import BeautifulSoup
 from lxml import html
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 # Defines default output folder name
