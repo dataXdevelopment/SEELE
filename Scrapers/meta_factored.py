@@ -20,10 +20,10 @@ output_folder = "output"
 
 class MetaCriticScraper(object):
     """Generated a CSV for a given MetaCritic Url
-  instance.run_scraper returns the CSV file
-  Args:
-      url (string): Valid MetaCritic Url
-  """
+    instance.run_scraper returns the CSV file
+    Args:
+        url (string): Valid MetaCritic Url
+    """
 
     def __init__(self, url, status_updater: Callable[[int], None]):
         self.url = url
@@ -218,6 +218,7 @@ class MetaCriticScraper(object):
 if __name__ == "__main__":
     import sys
     from pathlib import Path
+
     Path(output_folder).mkdir(parents=True, exist_ok=True)
 
     url = sys.argv[1]

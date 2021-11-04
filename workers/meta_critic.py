@@ -21,8 +21,8 @@ def upload_to_gcs(output_file) -> str:
     """
     storage_client = storage.Client()
 
-    bucket_name = 'worker_uploads'
-    source_file_name = f'./output/{output_file}'
+    bucket_name = "worker_uploads"
+    source_file_name = f"./output/{output_file}"
     destination_blob_name = output_file
 
     storage_client = storage.Client()
@@ -32,7 +32,7 @@ def upload_to_gcs(output_file) -> str:
     blob.upload_from_filename(source_file_name)
 
     download_url = blob.generate_signed_url(
-        version='v4', expiration=datetime.timedelta(minutes=15), method='GET')
+        version="v4", expiration=datetime.timedelta(minutes=15), method="GET")
 
     print("File {} uploaded to {} with url {}.".format(source_file_name,
                                                        destination_blob_name,
@@ -42,47 +42,47 @@ def upload_to_gcs(output_file) -> str:
 
 def main():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='rabbitmq'))
+        pika.ConnectionParameters(host="rabbitmq"))
     channel = connection.channel()
-    request_queue = 'tasks.metacritic.requests'
+    request_queue = "tasks.metacritic.requests"
     channel.queue_declare(queue=request_queue, durable=True)
-    redis_client = redis.Redis(host='redis',
+    redis_client = redis.Redis(host="redis",
                                decode_responses=True,
-                               charset='utf-8')
+                               charset="utf-8")
 
     def callback(ch, method, properties, body):
         print("Started Task")
 
         request = json.loads(body)
-        task_id = request['id']
+        task_id = request["id"]
 
         data = {}
-        data['scrapeStatus'] = request
-        response = data['scrapeStatus']
+        data["scrapeStatus"] = request
+        response = data["scrapeStatus"]
 
         def update_percentage(new_percentage):
-            response['percentage'] = new_percentage
-            redis_client.publish(f'tasks.metacritic.results.{task_id}',
+            response["percentage"] = new_percentage
+            redis_client.publish(f"tasks.metacritic.results.{task_id}",
                                  json.dumps(data))
 
         def complete_percentage():
-            response['percentage'] = 100
-            response['status'] = 'COMPLETED'
-            redis_client.publish(f'tasks.metacritic.results.{task_id}',
+            response["percentage"] = 100
+            response["status"] = "COMPLETED"
+            redis_client.publish(f"tasks.metacritic.results.{task_id}",
                                  json.dumps(data))
 
-        response['status'] = 'IN_PROGRESS'
+        response["status"] = "IN_PROGRESS"
         redis_client.set(task_id, json.dumps(response))
         print("Processing Task")
 
-        task_url = request['task']['url']
+        task_url = request["task"]["url"]
         scraper = MetaCriticScraper(task_url, update_percentage)
         scraper.run()
         output_file = scraper.to_csv()
 
         download_url = upload_to_gcs(output_file)
 
-        response['data'] = download_url
+        response["data"] = download_url
 
         complete_percentage()
         redis_client.set(task_id, json.dumps(response))
@@ -93,15 +93,15 @@ def main():
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=request_queue, on_message_callback=callback)
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
+    print(" [*] Waiting for messages. To exit press CTRL+C")
     channel.start_consuming()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        print("Interrupted")
         try:
             sys.exit(0)
         except SystemExit:

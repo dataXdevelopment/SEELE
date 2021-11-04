@@ -12,10 +12,7 @@ from psaw import PushshiftAPI
 
 
 class RedditScraper(object):
-    """
-
-
-    """
+    """ """
 
     def __init__(self, subred, queries):
 
