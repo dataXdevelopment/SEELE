@@ -2,3 +2,4 @@
 .DS_Store
 *chromedriver
 output/*
+service-account.json

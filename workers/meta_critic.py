@@ -1,11 +1,42 @@
+import datetime
 import json
 import os
 import sys
-import time
 
 import pika
 import redis
 from Scrapers.meta_factored import MetaCriticScraper
+from google.cloud import storage
+
+
+def upload_to_gcs(output_file) -> str:
+    """Uploads to google cloud storage and returns a signed URL to download
+
+    Args:
+        output_file ([string]): Name of the file to upload
+
+    Returns:
+        str: Signed URL to download the file
+    """
+    storage_client = storage.Client()
+
+    bucket_name = 'worker_uploads'
+    source_file_name = f'./output/{output_file}'
+    destination_blob_name = output_file
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+
+    download_url = blob.generate_signed_url(
+        version='v4', expiration=datetime.timedelta(minutes=15), method='GET')
+
+    print("File {} uploaded to {} with url {}.".format(source_file_name,
+                                                       destination_blob_name,
+                                                       download_url))
+    return download_url
 
 
 def main():
@@ -18,50 +49,41 @@ def main():
                                decode_responses=True,
                                charset='utf-8')
 
-    def update_percentage(new_percentage, data):
-        task_id = data['scrapeStatus']['id']
-        data['scrapeStatus']['percentage'] = new_percentage
-        redis_client.publish(f'tasks.metacritic.results.{task_id}',
-                             json.dumps(data))
-
-    def complete_percentage(data):
-        task_id = data['scrapeStatus']['id']
-        data['scrapeStatus']['percentage'] = 100
-        data['scrapeStatus']['status'] = 'COMPLETED'
-        redis_client.publish(f'tasks.metacritic.results.{task_id}',
-                             json.dumps(data))
-
     def callback(ch, method, properties, body):
         print("Started Task")
 
         request = json.loads(body)
         task_id = request['id']
 
-        response = request
-        print(request)
+        data = {}
+        data['scrapeStatus'] = request
+        response = data['scrapeStatus']
+
+        def update_percentage(new_percentage):
+            response['percentage'] = new_percentage
+            redis_client.publish(f'tasks.metacritic.results.{task_id}',
+                                 json.dumps(data))
+
+        def complete_percentage():
+            response['percentage'] = 100
+            response['status'] = 'COMPLETED'
+            redis_client.publish(f'tasks.metacritic.results.{task_id}',
+                                 json.dumps(data))
 
         response['status'] = 'IN_PROGRESS'
         redis_client.set(task_id, json.dumps(response))
-
-        # url = request['task']['url']
-        # scraper = MetaCriticScraper(url)
-        # scraper.run()
-        # scraper.to_csv()
-        data = {}
-        data['scrapeStatus'] = response
-
         print("Processing Task")
-        count = 0
 
-        while count < 20:
-            count += 1
-            update_percentage(new_percentage=count, data=data)
-            time.sleep(1)
+        task_url = request['task']['url']
+        scraper = MetaCriticScraper(task_url, update_percentage)
+        scraper.run()
+        output_file = scraper.to_csv()
 
-        response[
-            'data'] = "https://pbs.twimg.com/media/FBWBM9MVgAE58S-?format=jpg&name=large"
+        download_url = upload_to_gcs(output_file)
 
-        complete_percentage(data)
+        response['data'] = download_url
+
+        complete_percentage()
         redis_client.set(task_id, json.dumps(response))
 
         ch.basic_ack(delivery_tag=method.delivery_tag)

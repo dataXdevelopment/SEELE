@@ -3,6 +3,7 @@ This module exports the MetaCriticScaperTool class which allows
 for the generation of a csv for a given MetaCritic Url
 """
 
+from typing import Callable
 import pandas as pd
 import re
 from alive_progress import alive_it
@@ -24,13 +25,14 @@ class MetaCriticScraper(object):
       url (string): Valid MetaCritic Url
   """
 
-    def __init__(self, url):
+    def __init__(self, url, status_updater: Callable[[int], None]):
         self.url = url
         self.driver = webdriver.Remote(
             "http://selenium_grid:4444",
             DesiredCapabilities.CHROME,
         )
         self.product_title = ""
+        self.status_updater = status_updater
 
     def load_website(self):
         self.driver.get(self.url)
@@ -105,7 +107,7 @@ class MetaCriticScraper(object):
 
         self.load_website()
         # page_count = self.get_no_pages()
-        page_count = 3
+        page_count = 5
 
         for _ in alive_it(range(page_count)):
             self.get_page_source()
@@ -119,6 +121,7 @@ class MetaCriticScraper(object):
             print(f"Page {current_page} complete. Moving onto next page ...")
 
             self.click_next()
+            self.status_updater(current_page / page_count * 100)
 
     def make_dataframe(self):
         self.df = pd.DataFrame(self.reviews)
@@ -183,12 +186,19 @@ class MetaCriticScraper(object):
 
         return self.df
 
-    def to_csv(self):
+    def to_csv(self) -> str:
+        """
+            Converts the df to a csv and returns the filename
+        Returns:
+            str: Returns the file name of the csv
+        """
+
         title = self.product_title.replace(" ", "_").lower()
         file_name = f"{title}_metacritic_user_reviews.csv"
         self.df.to_csv(f"{output_folder}/{file_name}", index=False)
 
         print(f"{file_name} saved!")
+        return file_name
 
     def upload_csv():
         return True
