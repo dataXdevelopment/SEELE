@@ -1,5 +1,5 @@
-import pandas as pd
 import nltk
+import pandas as pd
 
 nltk.download('vader_lexicon')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer  # noqa: E402
