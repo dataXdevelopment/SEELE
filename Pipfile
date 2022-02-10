@@ -10,10 +10,11 @@ alive-progress = "*"
 selenium = "*"
 bs4 = "*"
 lxml = "*"
-celery = {extras = ["redis"], version = "*"}
 pika = "*"
 redis = "*"
 google-cloud-storage = "*"
+python-dotenv = "*"
+gql = {extras = ["all"], version = "*"}
 
 [dev-packages]
 pylint = "*"

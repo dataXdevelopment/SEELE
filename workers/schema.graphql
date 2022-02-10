@@ -1,0 +1,71 @@
+"""
+Use to check whether or not a user is authenticated and is associated
+with an optional set of roles.
+"""
+directive @requireAuth(roles: [String]) on FIELD_DEFINITION
+
+"""Use to skip authentication checks and allow public access."""
+directive @skipAuth on FIELD_DEFINITION
+
+"""Use @workerAuth to validate access to a field, query or mutation."""
+directive @workerAuth on FIELD_DEFINITION
+
+scalar BigInt
+
+input CreateTaskInput {
+  data: JSON!
+  engine: EngineTypes!
+  status: TaskStatus!
+}
+
+scalar Date
+
+scalar DateTime
+
+enum EngineTypes {
+  METACRITIC
+  TWITTER
+}
+
+scalar JSON
+
+scalar JSONObject
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(id: Int!, input: UpdateTaskInput!): Task!
+}
+
+type Query {
+  redwood: Redwood
+  tasks: [Task!]!
+}
+
+type Redwood {
+  currentUser: JSON
+  prismaVersion: String
+  version: String
+}
+
+type Task {
+  createdAt: DateTime!
+  data: JSON!
+  engine: EngineTypes!
+  id: Int!
+  result: String
+  status: TaskStatus!
+}
+
+enum TaskStatus {
+  COMPLETED
+  FAILED
+  PENDING
+  RUNNING
+}
+
+scalar Time
+
+input UpdateTaskInput {
+  result: String
+  status: TaskStatus!
+}
