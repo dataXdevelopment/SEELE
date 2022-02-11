@@ -4,11 +4,11 @@ for the generation of a csv for a given MetaCritic Url
 """
 
 import re
-from dotenv import dotenv_values
 
 import pandas as pd
 from alive_progress import alive_it
 from bs4 import BeautifulSoup
+from dotenv import dotenv_values
 from lxml import html
 from selenium import webdriver
 from selenium.webdriver.common.by import By

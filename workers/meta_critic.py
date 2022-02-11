@@ -8,6 +8,7 @@ from dotenv import dotenv_values
 from google.cloud import storage
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
+
 from Scrapers.meta_factored import MetaCriticScraper
 
 
