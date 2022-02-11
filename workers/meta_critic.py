@@ -79,8 +79,7 @@ client = Client(transport=transport, schema=schema_str)
 
 def main():
     queue_name = config["QUEUE_NAME"]
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host=config["AMPQ_URL"]))
+    connection = pika.BlockingConnection(pika.URLParameters(config["AMPQ_URL"]))
     channel = connection.channel()
     channel.queue_declare(queue=queue_name, durable=True)
 
