@@ -4,7 +4,7 @@ for the generation of a csv for a given MetaCritic Url
 """
 
 import re
-from typing import Callable
+from dotenv import dotenv_values
 
 import pandas as pd
 from alive_progress import alive_it
@@ -16,6 +16,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 # Defines default output folder name
 output_folder = "output"
+config = dotenv_values(".env")
 
 
 class MetaCriticScraper(object):
@@ -25,14 +26,13 @@ class MetaCriticScraper(object):
       url (string): Valid MetaCritic Url
   """
 
-    def __init__(self, url, status_updater: Callable[[int], None]):
+    def __init__(self, url):
         self.url = url
         self.driver = webdriver.Remote(
-            "http://selenium_grid:4444",
+            config["SELENIUM_GRID_URL"],
             DesiredCapabilities.CHROME,
         )
         self.product_title = ""
-        self.status_updater = status_updater
 
     def load_website(self):
         self.driver.get(self.url)
@@ -121,7 +121,6 @@ class MetaCriticScraper(object):
             print(f"Page {current_page} complete. Moving onto next page ...")
 
             self.click_next()
-            self.status_updater(current_page / page_count * 100)
 
     def make_dataframe(self):
         self.df = pd.DataFrame(self.reviews)

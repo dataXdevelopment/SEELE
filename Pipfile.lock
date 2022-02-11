@@ -110,11 +110,11 @@
         },
         "alive-progress": {
             "hashes": [
-                "sha256:1424b7d29827cbaf08100edad31dacd111733b43fb08cccd15a4dfdd38662e5b",
-                "sha256:630c287872c3f6ed15d3484ea8f1ecfa4a4154be8f4a11003e61da94ed77e4a9"
+                "sha256:21b2808a25120e8c795115ca3f103c28bde89c3e8edb225736786a14e1c19f6b",
+                "sha256:42c80dc3367c9e2b7332b2329b1b09f3b403894dc06fd08913d6c40f04637215"
             ],
             "index": "pypi",
-            "version": "==2.3.0"
+            "version": "==2.3.1"
         },
         "async-generator": {
             "hashes": [
