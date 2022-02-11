@@ -20,6 +20,8 @@ RUN pip install --user pipenv
 
 ENV PATH="/home/worker/.local/bin:${PATH}"
 
+ENV PYTHONPATH="."
+
 COPY --chown=worker:worker Pipfile Pipfile.* /app/
 
 RUN pipenv install --deploy --system
