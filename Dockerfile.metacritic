@@ -26,4 +26,4 @@ RUN pipenv install --deploy --system
 
 COPY --chown=worker:worker . /app
 
-CMD [ "python", "workers/metacritic.py" ]
+CMD [ "python", "workers/meta_critic.py" ]
