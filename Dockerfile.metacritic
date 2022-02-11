@@ -24,6 +24,8 @@ ENV PYTHONPATH="."
 
 RUN echo $SERVICE_ACCOUNT_KEY | base64 --decode > /app/service_account_key.json
 
+RUN mkdir /app/output
+
 COPY --chown=worker:worker Pipfile Pipfile.* /app/
 
 RUN pipenv install --deploy --system
