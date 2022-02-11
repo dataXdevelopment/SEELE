@@ -3,3 +3,5 @@
 *chromedriver
 output/*
 service-account.json
+.env
+*/__pycache__/*

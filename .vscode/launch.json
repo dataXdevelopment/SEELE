@@ -11,9 +11,11 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "args": [
-        "https://www.metacritic.com/game/pc/dota-2/user-reviews",
-        "./chromedriver"
-      ]
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceRoot}",
+        "GOOGLE_APPLICATION_CREDENTIALS": "./service-account.json",
+      }
     }
   ]
 }
