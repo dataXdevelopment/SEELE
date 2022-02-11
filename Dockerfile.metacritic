@@ -22,7 +22,7 @@ ENV PATH="/home/worker/.local/bin:${PATH}"
 
 ENV PYTHONPATH="."
 
-RUN echo $SERVICE_ACCOUNT_KEY | base64 --decode > /app/service-account.json
+RUN echo $SERVICE_ACCOUNT_KEY
 
 COPY --chown=worker:worker Pipfile Pipfile.* /app/
 
