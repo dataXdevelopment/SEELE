@@ -14,7 +14,7 @@
       ],
       "env": {
         "PYTHONPATH": "${workspaceRoot}",
-        "GOOGLE_APPLICATION_CREDENTIALS": "./service-account.json"
+        "GOOGLE_APPLICATION_CREDENTIALS": "./service-account.json",
       }
     }
   ]
