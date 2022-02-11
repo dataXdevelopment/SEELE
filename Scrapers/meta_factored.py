@@ -3,6 +3,7 @@ This module exports the MetaCriticScaperTool class which allows
 for the generation of a csv for a given MetaCritic Url
 """
 
+import os
 import re
 
 import pandas as pd
@@ -16,7 +17,10 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 # Defines default output folder name
 output_folder = "output"
-config = dotenv_values(".env")
+config = {
+    **dotenv_values(".env"),  # load shared development variables
+    **os.environ,  # override loaded values with environment variables
+}
 
 
 class MetaCriticScraper(object):
