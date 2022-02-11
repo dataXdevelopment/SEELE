@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get -y update
-RUN apt-get -y install curl npm
+RUN apt-get -y install curl
 
 RUN useradd -ms /bin/bash worker
 
@@ -25,3 +25,5 @@ COPY --chown=worker:worker Pipfile Pipfile.* /app/
 RUN pipenv install --deploy --system
 
 COPY --chown=worker:worker . /app
+
+CMD [ "python", "workers/test_worker.py" ]
