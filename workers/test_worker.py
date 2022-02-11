@@ -6,7 +6,7 @@ from time import sleep
 
 import pika
 from dotenv import dotenv_values
-from gql import gql, Client
+from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 config = dotenv_values(".env")
