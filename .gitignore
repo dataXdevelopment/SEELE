@@ -6,3 +6,6 @@ output/*
 service-account.json
 .env*
 */__pycache__/*
+node_modules/
+cdk.out/
+build/

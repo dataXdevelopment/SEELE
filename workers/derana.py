@@ -1,40 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-## import libraries
-
-
-# In[2]:
-
 import requests
-import re
-import time
-import os
-from dotenv import dotenv_values
-
-import pandas as pd
 from bs4 import BeautifulSoup
-from lxml import html
-
-import nltk
-
-nltk.download("vader_lexicon")
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
-####
-# Defines default output folder name
-output_folder = "output"
-config = {
-    **dotenv_values(".env"),  # load shared development variables
-    **os.environ,  # override loaded values with environment variables
-}
-
-
-class DeranaScraper(object):
+class DeranaScraper:
     def __init__(self, query):
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0"
@@ -45,7 +13,6 @@ class DeranaScraper(object):
         )
         self.main_url = "http://www.adaderana.lk/"
         self.url = self.base_string + self.test_query
-        self.sid = SentimentIntensityAnalyzer()
 
     def scrape_urls(self):
 
@@ -118,46 +85,3 @@ class DeranaScraper(object):
         self.df = pd.DataFrame(database, columns=["ArticleTitle", "Date", "Body"])
 
         return self.df
-
-    def sentiment_analysis(self):
-
-        self.df["scores"] = self.df["Body"].apply(
-            lambda body: self.sid.polarity_scores(body)
-        )
-
-        self.df["compound"] = self.df["scores"].apply(
-            lambda score_dict: score_dict["compound"]
-        )
-
-        self.df["news_grade"] = self.df["compound"].apply(
-            lambda c: "pos" if c >= 0.9 else "neg" if c <= -0.9 else "neutral"
-        )
-
-        return self.df
-
-    def run(self):
-
-        self.scrape_urls()
-        self.scrape_pages()
-        self.sentiment_analysis()
-
-    def to_csv(self):
-
-        file_name = f"{query}_Derana_Results.csv"
-
-        self.df.to_csv(f"{output_folder}/{file_name}", index=False)
-
-
-if __name__ == "__main__":
-
-    import sys
-    from pathlib import Path
-
-    Path(output_folder).mkdir(parents=True, exist_ok=True)
-
-    query = sys.argv[1]
-
-    scraper = DeranaScraper(query)
-
-    scraper.run()
-    scraper.to_csv()

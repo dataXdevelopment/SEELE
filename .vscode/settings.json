@@ -6,11 +6,12 @@
     "ci",
     "gitignore",
     "docker",
-    "workers"
+    "workers",
+    "aws"
   ],
   "python.linting.pylintEnabled": false,
   "python.linting.enabled": true,
-  "python.formatting.provider": "yapf",
+  "python.formatting.provider": "black",
   "editor.formatOnSave": true,
   "python.linting.flake8Enabled": true
 }
