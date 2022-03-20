@@ -9,3 +9,5 @@ service-account.json
 node_modules/
 cdk.out/
 build/
+.aws-sam/
+aws/**/*.json

@@ -14,13 +14,19 @@ export class DeranaStack extends Stack {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
 
-    // const queue = new Queue(this, 'DeranaQueriesQueue', {
-
-    // })
+    const queue = new Queue(this, 'DeranaQueriesQueue', {
+      
+    })
     const fn = new lambda.DockerImageFunction(this, 'DeranaQueryLambda', {
       code: lambda.DockerImageCode.fromImageAsset('lambda'),
-      timeout: Duration.seconds(10)
+      timeout: Duration.seconds(20),
+      environment: {
+        SQS_URL: queue.queueUrl
+      }
     })
 
+    const role = fn.role;
+    if (role !== undefined) queue.grantSendMessages(role);
+    
   }
 }

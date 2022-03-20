@@ -1,16 +1,21 @@
+from queue import Queue
 import requests
 from bs4 import BeautifulSoup
 import re
+import boto3
+import os
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0"
 }
 MAIN_URL = "http://www.adaderana.lk/"
+QUERY_URL = "http://www.adaderana.lk/search_results.php?mode=2&show=1&query="
+SQS_URL = os.environ["SQS_URL"]
 
 
 def lambda_handler(event, context):
     page = requests.get(
-        "http://www.adaderana.lk/search_results.php?mode=0&show=1&query=power",
+        QUERY_URL + event["query"],
         headers=HEADERS,
     )
     # page = requests.get(context.URL, headers=HEADERS)
@@ -42,10 +47,18 @@ def lambda_handler(event, context):
 
     final_list = []
 
+    client = boto3.client("sqs")
+
     for item in result_list:
         url = MAIN_URL + item
         final_list.append(url)
+        # client.send_message(
+        #     QueueUrl=SQS_URL,
+        #     MessageBody=url,
+        # )
 
-    print(final_list)
-    response = {"result": "abc"}
+    # response = f"Added {len(final_list)} urls"
+    response = {
+        "urls": final_list,
+    }
     return response
