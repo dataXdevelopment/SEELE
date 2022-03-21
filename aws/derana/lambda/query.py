@@ -1,8 +1,6 @@
-from queue import Queue
 import requests
 from bs4 import BeautifulSoup
 import re
-import boto3
 import os
 
 HEADERS = {
