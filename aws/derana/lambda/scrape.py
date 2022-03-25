@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0"
@@ -26,6 +25,10 @@ def lambda_handler(event, context):
 
     print("Record complete ...")
 
-    df = pd.DataFrame(record, columns=["ArticleTitle", "Date", "Body"])
+    response = {
+        "name": record[0],
+        "date": record[1],
+        "body": record[2],
+    }
 
-    return df
+    return response

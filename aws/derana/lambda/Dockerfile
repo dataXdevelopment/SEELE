@@ -1,12 +1,14 @@
+FROM python:3.9-alpine
+
 #This dockerfile requires a file, which is the main executable to be passed in
 ARG FILE_NAME
 
-FROM public.ecr.aws/lambda/python:3.9
+WORKDIR /app
 
 COPY requirements.txt  .
 
-RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}/index.py"
+RUN  pip3 install -r requirements.txt 
 
-COPY $FILE_NAME ${LAMBDA_TASK_ROOT}
+COPY ${FILE_NAME} index.py
 
-CMD [ "index.lambda_handler" ]
+CMD [ "python", "index.py" ]

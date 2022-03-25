@@ -45,17 +45,10 @@ def lambda_handler(event, context):
 
     final_list = []
 
-    client = boto3.client("sqs")
-
     for item in result_list:
         url = MAIN_URL + item
         final_list.append(url)
-        # client.send_message(
-        #     QueueUrl=SQS_URL,
-        #     MessageBody=url,
-        # )
 
-    # response = f"Added {len(final_list)} urls"
     response = {
         "urls": final_list,
     }

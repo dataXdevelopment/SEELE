@@ -15,30 +15,11 @@ export class DeranaStack extends Stack {
     // });
 
     const queue = new Queue(this, 'DeranaQueriesQueue', {
-
-    })
-    const queryLambda = new lambda.DockerImageFunction(this, 'DeranaQueryLambda', {
-      code: lambda.DockerImageCode.fromImageAsset('lambda', {
-        buildArgs: {
-          'FILE_NAME': 'query.py'
-        }
-      }),
-      timeout: Duration.seconds(20),
-      environment: {
-        SQS_URL: queue.queueUrl
-      }
     })
 
-    const role = queryLambda.role;
-    if (role !== undefined) queue.grantSendMessages(role);
-
-    const fn = new lambda.DockerImageFunction(this, 'DeranaScrapeLambda', {
-      code: lambda.DockerImageCode.fromImageAsset('lambda', {
-        buildArgs: {
-          'FILE_NAME': 'scrape.py'
-        }
-      }),
-      timeout: Duration.seconds(20),
-    })
+    
+    
+    const role = fn.role;
+    if (role !== undefined) queue.grantConsumeMessages(role);
   }
 }
