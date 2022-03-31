@@ -10,5 +10,3 @@ COPY requirements.txt  .
 RUN  pip3 install -r requirements.txt 
 
 COPY ${FILE_NAME} index.py
-
-CMD [ "python", "index.py" ]

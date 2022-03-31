@@ -1,19 +1,27 @@
+import json
+import os
+import sys
 import requests
 from bs4 import BeautifulSoup
 import re
-import os
+import boto3
+
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0"
 }
 MAIN_URL = "http://www.adaderana.lk/"
 QUERY_URL = "http://www.adaderana.lk/search_results.php?mode=2&show=1&query="
-SQS_URL = os.environ["SQS_URL"]
 
 
-def lambda_handler(event, context):
+def split(list_a, chunk_size):
+    for i in range(0, len(list_a), chunk_size):
+        yield list_a[i : i + chunk_size]
+
+
+def search(queryTerm):
     page = requests.get(
-        QUERY_URL + event["query"],
+        QUERY_URL + queryTerm,
         headers=HEADERS,
     )
     # page = requests.get(context.URL, headers=HEADERS)
@@ -49,7 +57,47 @@ def lambda_handler(event, context):
         url = MAIN_URL + item
         final_list.append(url)
 
-    response = {
-        "urls": final_list,
-    }
+    splitSize = int(os.environ["SPLIT_SIZE"])
+    response = list(split(final_list, splitSize))
     return response
+
+
+def insert_into_dynamodb(urlCollectionList, job_id):
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table("query_to_scrape")
+
+    for index, urlCollection in enumerate(urlCollectionList):
+        record = {
+            "job_id": job_id,
+            "index": str(index),
+            "urls": set(urlCollection),
+        }
+        print(record)
+        table.put_item(Item=record)
+
+    print("Inserted into dynamodb")
+
+
+def send_task_success(result):
+    client = boto3.client("stepfunctions")
+    indexes = list(range(0, len(result)))
+    response = client.send_task_success(
+        taskToken=os.environ["TASK_TOKEN_ENV_VARIABLE"],
+        output=json.dumps(indexes),
+    )
+    print(response)
+
+
+def main():
+    queryTerm = sys.argv[1]
+    job_id = sys.argv[2]
+
+    result = search(queryTerm)
+    print(result)
+
+    insert_into_dynamodb(result, job_id)
+    send_task_success(result)
+
+
+if __name__ == "__main__":
+    main()
